@@ -18,3 +18,10 @@ export enum CellType {
 }
 
 export type Maze = CellType[][];
+
+export interface LeaderboardEntry {
+  id?: string; // Firestore document ID
+  name: string;
+  score: number;
+  timestamp: Date;
+}
