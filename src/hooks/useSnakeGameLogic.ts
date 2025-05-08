@@ -157,5 +157,6 @@ export function useSnakeGameLogic() {
     resetGame,
     isPaused,
     setIsPaused,
+    setGameOver,
   };
 }

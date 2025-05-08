@@ -32,9 +32,10 @@ const SnakeGame: React.FC<{ onScoreSubmit?: () => void }> = ({ onScoreSubmit }) 
     GRID_COLS,
     updateGame,
     handleKeyDown,
-    resetGame: logicResetGame,
+    setGameOver,
     isPaused,
     setIsPaused,
+    resetGame,
   } = useSnakeGameLogic();
 
   const { toast } = useToast();
@@ -43,6 +44,7 @@ const SnakeGame: React.FC<{ onScoreSubmit?: () => void }> = ({ onScoreSubmit }) 
   
   const [showSubmitScoreForm, setShowSubmitScoreForm] = useState(false);
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
+  const [scoreSubmissionComplete, setScoreSubmissionComplete] = useState(false);
 
   const [colors, setColors] = React.useState({
     snakeColor: '',
@@ -61,12 +63,6 @@ const SnakeGame: React.FC<{ onScoreSubmit?: () => void }> = ({ onScoreSubmit }) 
       gridColor: `hsl(${getCssVariableValue('--border')})`
     });
   }, []);
-
-  const resetGame = useCallback(() => {
-    logicResetGame();
-    setShowSubmitScoreForm(false);
-    setScoreSubmitted(false);
-  }, [logicResetGame]);
 
   const handleScoreSubmit = async (name: string) => {
     if (score > 0) {
@@ -87,14 +83,16 @@ const SnakeGame: React.FC<{ onScoreSubmit?: () => void }> = ({ onScoreSubmit }) 
       }
     }
     setScoreSubmitted(true);
-    setShowSubmitScoreForm(false);
+    setShowSubmitScoreForm(false); // Close the form
+    setScoreSubmissionComplete(true); // Mark submission as complete
   };
   
   const handleSkipSubmit = () => {
     setScoreSubmitted(true);
-    setShowSubmitScoreForm(false);
+    setScoreSubmissionComplete(true); // Mark submission as complete
   }
 
+  // Note: The state `gameOver` is managed by `useSnakeGameLogic`.
   const drawGame = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || !colors.snakeColor) return;
@@ -200,8 +198,8 @@ const SnakeGame: React.FC<{ onScoreSubmit?: () => void }> = ({ onScoreSubmit }) 
       if (gameLoopIntervalRef.current) {
         clearInterval(gameLoopIntervalRef.current);
       }
-    };
-  }, [gameOver, isPaused, score, scoreSubmitted, updateGame]);
+    }
+  }, [gameOver, isPaused, score, scoreSubmitted, updateGame, setGameOver]); // Changed setIsGameOver to setGameOver
 
   return (
     <Card className="w-full max-w-max shadow-2xl overflow-hidden rounded-xl border-2 border-primary/20">
@@ -226,7 +224,7 @@ const SnakeGame: React.FC<{ onScoreSubmit?: () => void }> = ({ onScoreSubmit }) 
           tabIndex={0} // Make canvas focusable for key events
         />
         {(gameOver || isPaused || showSubmitScoreForm) && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className={`absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 ${scoreSubmissionComplete && !showSubmitScoreForm && 'hidden'}`}>
             {showSubmitScoreForm && score > 0 && !scoreSubmitted && (
               <SubmitScoreForm score={score} onSubmit={handleScoreSubmit} onCancel={handleSkipSubmit} />
             )}

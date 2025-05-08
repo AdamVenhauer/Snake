@@ -12,9 +12,10 @@ interface SubmitScoreFormProps {
   score: number;
   onSubmit: (name: string) => Promise<void>;
   onCancel: () => void;
+  onSuccess?: () => void;
 }
 
-const SubmitScoreForm: React.FC<SubmitScoreFormProps> = ({ score, onSubmit, onCancel }) => {
+const SubmitScoreForm: React.FC<SubmitScoreFormProps> = ({ score, onSubmit, onCancel, onSuccess }) => {
   const [name, setName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +30,7 @@ const SubmitScoreForm: React.FC<SubmitScoreFormProps> = ({ score, onSubmit, onCa
     setError(null);
     try {
       await onSubmit(name.trim());
+      onSuccess?.();
     } catch (submissionError) {
       setError((submissionError as Error).message || 'Failed to submit score.');
     } finally {
