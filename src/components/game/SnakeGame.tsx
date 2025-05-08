@@ -178,11 +178,8 @@ const SnakeGame: React.FC<{ onScoreSubmit?: () => void }> = ({ onScoreSubmit }) 
       if (score > 0 && !scoreSubmitted) {
         setShowSubmitScoreForm(true);
       } else {
-         toast({
-           title: "Game Over!",
-           description: `Your score: ${score}. Press R to restart.`,
-           variant: "destructive",
-         });
+        // Game over UI is handled by JSX based on `gameOver` and `showSubmitScoreForm` state.
+        // No need for an additional toast here if score is 0 or already submitted.
       }
       return;
     }
@@ -204,7 +201,7 @@ const SnakeGame: React.FC<{ onScoreSubmit?: () => void }> = ({ onScoreSubmit }) 
         clearInterval(gameLoopIntervalRef.current);
       }
     };
-  }, [gameOver, isPaused, score, scoreSubmitted, toast, updateGame]);
+  }, [gameOver, isPaused, score, scoreSubmitted, updateGame]);
 
   return (
     <Card className="w-full max-w-max shadow-2xl overflow-hidden rounded-xl border-2 border-primary/20">
